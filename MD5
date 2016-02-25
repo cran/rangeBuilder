@@ -1,5 +1,5 @@
-1aa29b834735539795846a8aa2b453fd *ChangeLog
-a838a0c830b5860b5fd76d102801bbf2 *DESCRIPTION
+18502ab4881571c829dd831fc80e03f5 *ChangeLog
+69e785e03b89b067b7ecd32359d2bbcb *DESCRIPTION
 4bbdb0b26beff626e2ccc00f4de269a9 *LICENSE.note
 d01308f51d0c501f7c5418e418f86f21 *NAMESPACE
 96c0394b4795f2342aa522749b79fcde *R/acceptedAndSynonyms.R
@@ -8,7 +8,7 @@ d01308f51d0c501f7c5418e418f86f21 *NAMESPACE
 e2ff6acbf23ff5dc80814858758450c8 *R/birdAndMammals.R
 6264225c9a3235a554d0d2f16fd04a33 *R/closestCountry.R
 df1a505727e78aeb853db1648c8cb2ad *R/filterByLand.R
-46dd78977401cdee52f555dca4caa19a *R/filterByProximity.R
+52c119b659cd949efc208cd7056ab45d *R/filterByProximity.R
 fe1e94c112ab9075b694d16920d55b11 *R/flipSign.R
 a8b2c771053f11e16ce59f0f7676df93 *R/getDynamicAlphaHull.R
 9041bc3844d1250ba037c6ea778c91cf *R/getExtentOfList.R
@@ -32,7 +32,7 @@ d7d10c1e15d716570b6560046286aefd *man/getDynamicAlphaHull.Rd
 ca607856182890be9bd788511853c9d1 *man/getExtentOfList.Rd
 a0168795510937984b48b1d8bf52e5a4 *man/queryGISD.Rd
 8d60abc31c39093089e22dc99312ec5e *man/rangeBuilder-data.Rd
-92f412f59f9018c8ca4586f7274ee36f *man/rangeBuilder-package.Rd
+0793f9540271f04b9bad2c64397d5799 *man/rangeBuilder-package.Rd
 47903ac8a7e5e031dcda9916295dd8c9 *man/reptileDatabaseCountries.Rd
 4fa967899d37a7ee332a6e64ae8b97fb *man/richnessRaster.Rd
 03ac554d5260f2e91b5f8303773bc6e4 *man/standardizeCountry.Rd
