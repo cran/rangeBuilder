@@ -12,14 +12,14 @@ richnessRaster(ranges, resolution = 1, resUnits = 'degrees',
 }
 \arguments{
 	\item{ranges}{
-		a RasterStack or a list of SpatialPolygons
+		a RasterStack/RasterBrick or a list of SpatialPolygons
 	}
 	\item{resolution}{
-		the size of the cells of the resulting raster
+		the size of the cells of the resulting raster (ignored if input is raster)
 	}
 	\item{resUnits}{
 		if 'degrees', then raster will be unprojected, if 'meters' then raster will be 
-		projected to equal area Behrmann projection
+		projected to equal area Behrmann projection (ignored if input is raster)
 	}
 	\item{extent}{
 		if 'auto', then the maximal extent of the polygons will be used, if 
@@ -49,16 +49,26 @@ richnessRaster(ranges, resolution = 1, resUnits = 'degrees',
 	presence is overlap of 50 percent or more of the cell (specified 
 	with \code{coverCutoff}).
 
-	If ranges are in SpatialPolygon format, it is more convenient to have 
+	If ranges are in SpatialPolygon format, it might be more convenient to have 
 	SpatialPolygon input to this function, however the majority of the runtime 
 	of this function is put towards rasterizing the polygons. Therefore, it is 
 	preferable to first generate rasters, and then to provide a RasterStack
 	to this function, as the most time-consuming step is done separately. 
+
+	Control of resolution, projection and extent are all intended for
+	SpatialPolygon input. If rasters are input, then these manipulations should
+	be done beforehand. 
+	
+	This function expects that all input rasters have presence values (i.e., 
+	non-NA values). If any rasters have entirely NA cells, then the function will stop
+	with a warning, and the output will be the index in the rasterStack of those rasters.
 }
 
 \value{
 	If \code{speciesByCell = FALSE}, \cr
 	RasterLayer, where values represent counts of species. Counts of 0 are set to NA.
+	If the function stopped due to all-NA rasters, then the output is a numeric vector of
+	raster indices.
 
 
 	If \code{speciesByCell = TRUE}, \cr
@@ -136,7 +146,7 @@ richnessRaster(ranges, resolution = 1, resUnits = 'degrees',
 
 # # range creation requires at least 3 unique occurrences.
 # occCount <- sapply(crotalus, function(x) {
-	# nrow(x[!duplicated(x[,c('decimallongitude','decimallatitude')]),]))
+	# nrow(x[!duplicated(x[,c('decimallongitude','decimallatitude')]),])
 # })
 # crotalus <- crotalus[which(occCount > 3)]
 

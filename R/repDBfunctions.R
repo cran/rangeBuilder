@@ -4,7 +4,7 @@
 
 ## Version of the synonym matcher that will search within a span from the present to a specified year for the presence of a synonym
 
-synonymMatchByYear_repDB <- function(x, year1=1950, year2=1900, fuzzy = TRUE, fuzzyDist=2, advancedSearch = TRUE, returnMultiple = FALSE, printReport = TRUE, nthreads = 1) {
+synonymMatchByYear_repDB <- function(x, year1 = 1950, year2 = 1900, fuzzy = TRUE, fuzzyDist = 2, advancedSearch = TRUE, returnMultiple = FALSE, printReport = TRUE, nthreads = 1) {
 	
 	if (nthreads > 1) {
 		if (!"package:parallel" %in% search()) {
@@ -16,6 +16,10 @@ synonymMatchByYear_repDB <- function(x, year1=1950, year2=1900, fuzzy = TRUE, fu
 	
 	x <- gsub(' ', '_', x)
 	uniqueSp <- unique(x)
+	
+	# if only one word found, add an NA
+	x[!grepl('_', x)] <- paste0(x[!grepl('_', x)], '_NA')
+	uniqueSp[!grepl('_', uniqueSp)] <- paste0(uniqueSp[!grepl('_', uniqueSp)], '_NA')
 
 	#return NA for genus only, or species only
 	res[grepl("_NA$|^NA_", x)] <- NA
@@ -201,7 +205,11 @@ firstPass <- function(sp, synList, synonyms, fuzzy, fuzzyDist, returnMultiple) {
 				status <- 'fuzzy match | synonym'
 			}
 			if (length(matches) > 1) {
-				res <- paste(matches, collapse = ' | ')
+				if (returnMultiple) {
+					res <- paste(matches, collapse = ' | ')
+				} else {
+					res <- NA
+				}
 				status <- 'multiple fuzzy hits | synonym'
 			}
 		}

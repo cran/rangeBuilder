@@ -11,9 +11,7 @@
 
 richnessRaster <- function(ranges, resolution = 1, resUnits = 'degrees', extent = 'auto', speciesByCell = FALSE, coverCutoff = 0.5, nthreads = 1) {
 	
-	if (!resUnits %in% c('degrees', 'meters')) {
-		stop('resUnits must either be degrees or meters')
-	}
+	resUnits <- match.arg(resUnits, c('degrees', 'meters'))
 	
 	if (nthreads > 1) {
 		if (!"package:parallel" %in% search()) {
@@ -42,6 +40,7 @@ richnessRaster <- function(ranges, resolution = 1, resUnits = 'degrees', extent 
 			if ('auto' %in% extent) {
 				#get overall extent
 				masterExtent <- getExtentOfList(ranges)
+				masterExtent <- list(minLong = masterExtent@xmin, maxLong = masterExtent@xmax, minLat = masterExtent@ymin, maxLat = masterExtent@ymax)
 			} else if (is.numeric(extent) & length(extent) == 4) {
 				masterExtent <- list(minLong = extent[1], maxLong = extent[2], minLat = extent[3], maxLat = extent[4])
 			} else {
@@ -108,14 +107,16 @@ richnessRaster <- function(ranges, resolution = 1, resUnits = 'degrees', extent 
 	
 	
 	# if rasterstack as input
-	if (class(ranges) == 'RasterStack') {
+	if (class(ranges) %in% c('RasterStack', 'RasterBrick')) {
 		
 		#check that all rasters have values
 		valCheck <- minValue(ranges)
 		badEntries <- which(is.na(valCheck))
+		badEntriesRet <- badEntries
 		if (length(badEntries) > 0) {
 			badEntries <- paste(which(is.na(valCheck)), collapse = ', ')
-			stop(paste0('The following rasters have no non-NA cells: ', badEntries, '.'))
+			warning(paste0('The following rasters have no non-NA cells: ', badEntries, '.'))
+			return(badEntriesRet)
 		}
 		
 		# rasterstack calculations only
