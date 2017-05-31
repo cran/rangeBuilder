@@ -1,11 +1,14 @@
 # Function to create alpha hull that encompasses x % of occurrences
 
 
-getDynamicAlphaHull <- function(x, fraction = 0.95, partCount = 3, buff = 10000, initialAlpha = 3, coordHeaders = c('Longitude', 'Latitude'), clipToCoast = TRUE, proj = "+proj=longlat +datum=WGS84", alphaIncrement = 1, verbose = FALSE) {
+getDynamicAlphaHull <- function(x, fraction = 0.95, partCount = 3, buff = 10000, initialAlpha = 3, coordHeaders = c('Longitude', 'Latitude'), clipToCoast = 'terrestrial', proj = "+proj=longlat +datum=WGS84", alphaIncrement = 1, verbose = FALSE) {
 
 	if (proj != "+proj=longlat +datum=WGS84") {
 		stop("Currently, proj can only be '+proj=longlat +datum=WGS84'.")
 	}
+
+	if (clipToCoast == FALSE) {clipToCoast <- 'no'}
+	clipToCoast <- match.arg(clipToCoast, c('no', 'terrestrial', 'aquatic'))
 
 	if (ncol(x) == 2) {
 		coordHeaders <- c(1,2)
@@ -14,7 +17,11 @@ getDynamicAlphaHull <- function(x, fraction = 0.95, partCount = 3, buff = 10000,
 	#reduce to unique coordinates
 	x <- x[!duplicated(x[,coordHeaders]), coordHeaders]
 	x <- x[complete.cases(x),]
-  
+	
+	if (nrow(x) < 3) {
+		stop('This function requires a minimum of 3 unique coordinates (after removal of duplicates).')
+	}
+	
 	#Alpha hulls cannot be generated if first 3 points are linear. 
 	while ((x[1,coordHeaders[1]] == x[2,coordHeaders[1]] & x[2, coordHeaders[1]] == x[3, coordHeaders[1]]) | (x[1,2] == x[2, coordHeaders[2]] & x[2, coordHeaders[2]] == x[3, coordHeaders[2]])) {
 		x <- x[sample(1:nrow(x),size = nrow(x)),]
@@ -50,7 +57,7 @@ getDynamicAlphaHull <- function(x, fraction = 0.95, partCount = 3, buff = 10000,
 		slot(hull, "polygons") <- lapply(slot(hull, "polygons"), checkPolygonsGEOS2)
 	}
  
-	while (is.null(hull) | 'try-error' %in% class(hull) | !rgeos::gIsValid(hull, reason = TRUE) %in% c(TRUE, 'Valid Geometry')) {
+	while (is.null(hull) | 'try-error' %in% class(hull) | !cleangeo::clgeo_IsValid(hull)) {
 		alpha <- alpha + alphaIncrement
 		if (verbose) {cat('\talpha:', alpha, '\n')}
 		hull <- try(ah2sp(alphahull::ahull(data.frame(x),alpha=alpha), proj4string=CRS('+proj=longlat +datum=WGS84')))
@@ -69,18 +76,22 @@ getDynamicAlphaHull <- function(x, fraction = 0.95, partCount = 3, buff = 10000,
 	while (any(length(hull@polygons[[1]]@Polygons) > partCount, length(which(pointWithin) == TRUE)/length(x) < fraction)) {
 	    alpha <- alpha + alphaIncrement
 	    if (verbose) {cat('\talpha:', alpha, '\n')}
-	    hull <- try(alphahull::ahull(data.frame(x), alpha = alpha))
-	    while ('try-error' %in% class(hull)) {
+	    hull <- try(alphahull::ahull(data.frame(x), alpha = alpha), silent = TRUE)
+	    while ('try-error' %in% class(hull) & alpha <= 500) {
 	      alpha <- alpha + alphaIncrement
-	      hull <- try(alphahull::ahull(data.frame(x),alpha = alpha))
+	      hull <- try(alphahull::ahull(data.frame(x),alpha = alpha), silent = TRUE)
 	    }
-		hull <- ah2sp(hull, proj4string = CRS('+proj=longlat +datum=WGS84'))
-		hull <- sp::spTransform(hull, CRS("+init=epsg:3395"))
-		slot(hull, "polygons") <- lapply(slot(hull, "polygons"), checkPolygonsGEOS2)
-		hull <- rgeos::gBuffer(hull, width = buff)
-		hull <- sp::spTransform(hull, CRS(proj))
-		buffered <- TRUE
-		pointWithin <- rgeos::gIntersects(x, hull, byid = TRUE)
+		if (!'try-error' %in% class(hull)) {
+			hull <- ah2sp(hull, proj4string = CRS('+proj=longlat +datum=WGS84'))
+			hull <- sp::spTransform(hull, CRS("+init=epsg:3395"))
+			if (cleangeo::clgeo_IsValid(hull)) {
+				slot(hull, "polygons") <- lapply(slot(hull, "polygons"), checkPolygonsGEOS2)
+				hull <- rgeos::gBuffer(hull, width = buff)
+				hull <- sp::spTransform(hull, CRS(proj))
+				buffered <- TRUE
+				pointWithin <- rgeos::gIntersects(x, hull, byid = TRUE)
+			}
+		}
 		alphaVal = alpha
 		if (alpha > 500) {
 			hull <- rgeos::gConvexHull(x)
@@ -100,11 +111,15 @@ getDynamicAlphaHull <- function(x, fraction = 0.95, partCount = 3, buff = 10000,
 		
 	}
   
-	if (clipToCoast) {
+	if (clipToCoast != 'no') {
 		# load built-in gshhs dataset
 		data(gshhs, envir = environment())
 		gshhs <- sp::spTransform(gshhs, CRS(proj4string(hull)))
-		hull <- rgeos::gIntersection(hull, gshhs)
+		if (clipToCoast == 'terrestrial') {
+			hull <- rgeos::gIntersection(hull, gshhs)
+		} else {
+			hull <- rgeos::gDifference(hull, gshhs)
+		}
 	}
   
 	return(list(hull, alpha = paste('alpha', alphaVal, sep = '')))
