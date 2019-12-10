@@ -41,7 +41,7 @@ getDynamicAlphaHull <- function(x, fraction = 0.95, partCount = 3, buff = 10000,
 	if (verbose) {cat('\talpha:', alpha, '\n')}
 
 	hull <- try(alphahull::ahull(data.frame(x),alpha = alpha))
-	while ('try-error' %in% class(hull)) {
+	while (inherits(hull, 'try-error')) {
 		if (verbose) {cat('\talpha:', alpha, '\n')}
 		alpha <- alpha + alphaIncrement
 		hull <- try(alphahull::ahull(data.frame(x),alpha = alpha))
@@ -57,7 +57,7 @@ getDynamicAlphaHull <- function(x, fraction = 0.95, partCount = 3, buff = 10000,
 		slot(hull, "polygons") <- lapply(slot(hull, "polygons"), checkPolygonsGEOS2)
 	}
  
-	while (is.null(hull) | 'try-error' %in% class(hull) | !cleangeo::clgeo_IsValid(hull)) {
+	while (is.null(hull) | inherits(hull, 'try-error') | !cleangeo::clgeo_IsValid(hull)) {
 		alpha <- alpha + alphaIncrement
 		if (verbose) {cat('\talpha:', alpha, '\n')}
 		hull <- try(ah2sp(alphahull::ahull(data.frame(x),alpha=alpha), proj4string=CRS('+proj=longlat +datum=WGS84')))
@@ -77,11 +77,11 @@ getDynamicAlphaHull <- function(x, fraction = 0.95, partCount = 3, buff = 10000,
 	    alpha <- alpha + alphaIncrement
 	    if (verbose) {cat('\talpha:', alpha, '\n')}
 	    hull <- try(alphahull::ahull(data.frame(x), alpha = alpha), silent = TRUE)
-	    while ('try-error' %in% class(hull) & alpha <= 500) {
+	    while (inherits(hull, 'try-error') & alpha <= 500) {
 	      alpha <- alpha + alphaIncrement
 	      hull <- try(alphahull::ahull(data.frame(x),alpha = alpha), silent = TRUE)
 	    }
-		if (!'try-error' %in% class(hull)) {
+		if (!inherits(hull, 'try-error')) {
 			hull <- ah2sp(hull, proj4string = CRS('+proj=longlat +datum=WGS84'))
 			hull <- sp::spTransform(hull, CRS("+init=epsg:3395"))
 			if (cleangeo::clgeo_IsValid(hull)) {
@@ -132,7 +132,7 @@ checkPolygonsGEOS2 <- function(obj, properly = TRUE, force = TRUE, useSTRtree = 
 	if (!is(obj, "Polygons")) 
 	    stop("not a Polygons object")
 	comm <- try(rgeos::createPolygonsComment(obj), silent = TRUE)
-	if (class(comm) != "try-error" && !force) {
+	if (!inherits(comm, 'try-error') && !force) {
 	    comment(obj) <- comm
 	    return(obj)
 	}
@@ -150,7 +150,7 @@ checkPolygonsGEOS2 <- function(obj, properly = TRUE, force = TRUE, useSTRtree = 
 	        if (useSTRtree) {
 	            if (!is.null(tree1[[i]])) {
 	              res <- try(rgeos::gEquals(SP[i, ], SP[tree1[[i]],], byid = TRUE), silent = TRUE)
-	              if (class(res) == "try-error") {
+	              if (inherits(res, 'try-error')) {
 	                warning("Polygons object ", IDs, ", Polygon ", i, ": ", res)
 	                next
 	              }
@@ -161,7 +161,7 @@ checkPolygonsGEOS2 <- function(obj, properly = TRUE, force = TRUE, useSTRtree = 
 	        }
 	        else {
 	            res <- try(rgeos::gEquals(SP[i, ], SP[uniqs,], byid = TRUE), silent = TRUE)
-	            if (class(res) == "try-error") {
+	            if (inherits(res, 'try-error')) {
 	              warning("Polygons object ", IDs, ", Polygon ", i, ": ", res)
 	              next
 	            }

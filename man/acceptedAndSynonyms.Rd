@@ -34,13 +34,13 @@ getAcceptedNames(db)
 
 	The mammal database is Wilson and Reeder's Mammal Species of the World, 3rd edition, downloaded from \url{http://www.departments.bucknell.edu/biology/resources/msw3/}. 
 
-	The amphibian database is a local copy of the AmphibiaWeb taxonomy (\url{amphibiaweb.org/taxonomy/index.html}), which will be updated periodically.  
+	The amphibian database is a local copy of the AmphibiaWeb taxonomy (\url{https://amphibiaweb.org/taxonomy/index.html}), which will be updated periodically.  
 	
 	To see when these datasets were last updated for this R package, run \code{\link{downloadDates}}.
 
 	Citation:
 	
-	BirdLife International. 2015. The BirdLife checklist of the birds of the world: Version 8. Downloaded from http://www.birdlife.org/datazone/userfiles/file/Species/Taxonomy/BirdLife_Checklist_Version_80.zip [.xls zipped 1 MB].
+	BirdLife International. 2015. The BirdLife checklist of the birds of the world: Version 8. Downloaded from \url{http://www.birdlife.org/datazone/userfiles/file/Species/Taxonomy/BirdLife_Checklist_Version_80.zip} [.xls zipped 1 MB].
 
 	Don E. Wilson & DeeAnn M. Reeder (editors). 2005. Mammal Species of the World. A Taxonomic and Geographic Reference (3rd ed), Johns Hopkins University Press, 2,142 pp.
 
