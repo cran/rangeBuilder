@@ -1,5 +1,5 @@
 07cc3b18a24fa7c5b84575dfdd2ad328 *ChangeLog
-6cc1c5ffcaea86018bde113d69ca67ab *DESCRIPTION
+8212a58bb5bcb044a9838f73483ffecb *DESCRIPTION
 422a591059b0a621b546ab1b3f22e731 *NAMESPACE
 ec19e7f75f4c34d538a18a9f1c2b9a0b *R/RcppExports.R
 762a54dcd03086e4e044234208270d98 *R/addRasterLegend.R
@@ -10,7 +10,7 @@ f63e06f8598de1e7bd2661758e5cb5c5 *R/coordError.R
 5606f2970e858650f68e2b4a3266ae55 *R/filterByLand.R
 ef95bebc5b6be2119db79b4ae8d8e28a *R/filterByProximity.R
 587312b5e8a0926184846233f17836ab *R/flipSign.R
-785f9e40e24c58e54613b006c8ac8320 *R/getDynamicAlphaHull.R
+4fca5bf61d36d421bad555319cf7ba25 *R/getDynamicAlphaHull.R
 788d883b1a47412549534c9eac847005 *R/getExtentOfList.R
 4e2e5b0592f0e5df56fe1b3679087754 *R/rangeBuilder-package.R
 4d021d5649e428c652db894da70fc9f7 *R/rasterStackFromPolyList.R
@@ -18,7 +18,7 @@ b876021766296537520dabadee16750a *R/standardizeCountry.R
 5e1c675b0ef19065cd66297adbd11c85 *R/sysdata.rda
 e46fd11233381f70e6bc9e2db9ef5ed8 *R/transparentColor.R
 e94c2a90455f694a922a46e4e8585ff1 *data/crotalus.rda
-53d8cce31195da6a3bd2bee51d094a1b *inst/CITATION
+dcf1afd5e9799a1c292a0a94f6edb37b *inst/CITATION
 b0528a3f989b054d0f457445a2811869 *man/addRasterLegend.Rd
 3244193f2e07f42023f2181193110ce2 *man/closestCountry.Rd
 352ba352c9d44ea4e3c60283ff03f94e *man/coordError.Rd

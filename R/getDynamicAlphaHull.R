@@ -130,11 +130,27 @@ getDynamicAlphaHull <- function(x, fraction = 0.95, partCount = 3, buff = 10000,
 	if (!problem) {
 
 		hull <- ah2sf(hull)
-		 
-		while (is.null(hull) | inherits(hull, 'try-error') | !all(sf::st_is_valid(hull))) {
+		
+		validityCheck <- function(hull) {
+			if (!is.null(hull) & !inherits(hull, 'try-error')) {
+				if (!all(sf::st_is_valid(hull))) {
+					TRUE
+				} else {
+					FALSE
+				}
+			} else {
+				FALSE
+			}
+		}
+
+		while (is.null(hull) | inherits(hull, 'try-error') | validityCheck(hull)) {
 			alpha <- alpha + alphaIncrement
 			if (verbose) {cat('\talpha:', alpha, '\n')}
 			hull <- try(ah2sf(alphahull::ahull(sf::st_coordinates(x), alpha = alpha)), silent = TRUE)
+			if (alpha > alphaCap) {
+				problem <- TRUE
+				break
+			}			
 		}
 	
 		#how many points are within hull?
